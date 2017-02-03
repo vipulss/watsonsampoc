@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta charset="utf-8" />
+    <script>
+     /*eslint-env jquery */
+     $(document).ready(function () {
+            var ulDevices = $('#ulDevices');
+            $('#btn').click(function(){
+            	
+                var username = $('#txtUsername').val();
+                var password = $('#txtPassword').val();
+                $.ajax({
+                    type:'GET',
+                    url: "https://5d07a8.internetofthings.ibmcloud.com/api/v0002/device/types/TempMeasurement/devices",
+                    datatype: 'json',
+                    headers: {
+                        'Authorization': 'Basic' + btoa(username + ':' + password),
+                    },
+                    
+                    success: function (data) {
+                    	alert("Sucess.");
+                    	ulDevices.empty();
+                        $.each(data, /* @callback */ function (index,val) {
+                            var deviceName = val.deviceId;
+                            ulDevices.append('<li>' + deviceName + '</li>');
+                        });
+                    },
+                    complete: function (jqXHR) {
+                    	alert("Complete");
+                        if ( jqXHR.status === '401')
+                        {
+                            ulDevices.emplty();
+                            ulDevices.append('<li>' + jqXHR.status + ':' + jqXHR.statusText + '</ li >');
+                        }
+                    }
+                });
+            });
+
+            $('#btnClear').click(function () {
+                ulDevices.empty();
+                $('#txtUsername').val("");
+                $('#txtPassword').val("");
+            });
+        });
+    </script>
+</head>
+<body>
+
+    Username :  <input type="text" id="txtUsername" />
+    Password :  <input type="password" id="txtPassword" />
+    <br /><br />
+    <input id="btn" type="button" value="Get All Device" />
+    <input id="btnClear" type="button" value="Clear" />
+    <ul id="ulDevices"></ul>
+
+</body>
+</html>
